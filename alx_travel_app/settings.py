@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import pymysql
+
+# Initialize pymysql as mysql db 
+pymysql.install_as_MySQLdb()
+
 import environ
 import os
 from pathlib import Path
@@ -51,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
+    'django_celery_results',
 
     # custom apps
     'listings',
@@ -73,6 +79,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'alx_travel_app.urls'
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+# Celery Settings
+CELERY_BROKER_URL = 'amqp://localhost' # RabbitMQ broker
+CELERY_ACCEPT_CONTENT = ['json'] # accepted content formats
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+# Celery Results Backend
+CELERY_RESULT_BACKEND = 'django-db'
 
 
 TEMPLATES = [
@@ -169,3 +186,12 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     ],
 }
+
+
+# Email Backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# SMTP Settings
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = '2525'
